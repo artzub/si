@@ -1,487 +1,318 @@
-(function() {
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame =
-            window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+/**
+ * User: ArtZub
+ * Date: 05.12.12
+ * Time: 11:28
+ */
+
+function init() {
+    var score = d3.select("#score");
+
+    window.game = createGamePlay("#games", 850, 850, 2, function(scr, lvl) {
+        score.text(scr);
+        d3.selectAll(".titledata").attr("content", "apus agency. My score " + score.text());
+        d3.selectAll(".descdata").attr("content", "My score " + score.text());
+        d3.selectAll(".title").text("apus agency. My score " + score.text());
+    }, facebookShare);
+
+    var backGame = d3.selectAll(".backtogame")
+            .style("display", "none")
+            .on("click", function() {
+                helpGame
+                    .transition()
+                    .duration(1000)
+                    .style("opacity", 0)
+                    .each("end", function() {
+                        d3.select(this)
+                            .style("display", "none");
+                    });
+                if (game.paused())
+                    play(d3.select(this));
+                else
+                    backGame.style("display", "none");
+            }),
+        startGame = d3.select("#start_game").on("click", function() {
+            play(d3.select(this));
+        }),
+        helpGame = d3.select("#help"),
+        htp = d3.select("#howtoplay").on("click", function() {
+            d3.event.preventDefault();
+            if (game.runnig())
+                pauseGame();
+            else
+                backGame.style("display", null);
+
+            helpGame
+                .style("opacity", 0)
+                .style("display", null)
+                .transition()
+                .duration(1000)
+                .style("opacity", 1);
+        })
+        ;
+
+    function posGames() {
+        var al = 45,
+            li = d3.select("#logoimg"),
+            g = d3.select("#games"),
+
+            wg = parseInt(g.property("clientWidth")),
+            hg = parseInt(g.property("clientHeight")),
+
+            w = parseInt(li.property("naturalWidth")),
+            h = parseInt(li.property("naturalHeight")),
+
+            wli = parseInt(li.property("width")),
+            hli = parseInt(li.property("height")),
+
+            nwg = 2 * (Math.sqrt(Math.pow(hg, 2) + Math.pow(wg, 2)) / 2) * Math.sin(Math.atan(hg/wg) + al),
+            nhg = 2 * (Math.sqrt(Math.pow(hg, 2) + Math.pow(wg, 2)) / 2) * Math.sin(Math.atan(wg/hg) + al),
+
+            dx = (nwg - wg) / 2 * 1.43,
+            dy = (nhg - hg) / 2 * 1.26,
+
+            cw = (w / wli),
+            ch = (h / hli),
+
+            l = wli * .77 + li.property("offsetLeft"),
+            b = hli * .52 + 28 / ch - ch * 2,
+
+            coord = game.shipCoord();
+
+        coord.x -= wg/2 - 16.5;
+
+        coord.x /= 2;
+
+        coord.x = coord.x * Math.sin(al);
+        coord.y = -coord.x;
+
+        g.style("left", l - dx + "px")
+                .style("bottom", b - dy + "px");
+
+        d3.select("#start_game").style("left", l + coord.x * (coord.x > 0 ? 1.18 : 1.17 ) + "px")
+                .style("bottom", b + coord.y * (coord.y > 0 ? 1.17 : 1.18 )  + "px");
     }
 
-    if (!window.requestAnimationFrame)
-        window.requestAnimationFrame = function(callback, element) {
-            var currTime = new Date().getTime();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-                timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
+    d3.select(window)
+            .on("resize", posGames);
 
-    if (!window.cancelAnimationFrame)
-        window.cancelAnimationFrame = function(id) {
-            clearTimeout(id);
-        };
-})();
-
-function item(id, x, y) {
-    var el = {
-        id : id,
-        visible : true,
-        x : x || 0,
-        y : y || 0,
-        _translate : [0, 0],
-        _scale : [1, 1],
-        draw : function(canvas) {
-            return this;
-        },
-        translate : function(x, y) {
-            if (!arguments.length)
-                return el._translate;
-
-            if (arguments.length < 2)
-                y = x || 0;
-
-            el._translate = [x || 0, y || 0];
-            return el;
-        },
-        scale : function(zx, zy) {
-            if (!arguments.length)
-                return el._scale;
-
-            if (arguments.length < 2)
-                zy = zx || 1;
-
-            el._scale = [zx || 1, zy || 1];
-            return el;
-        }
-    };
-    return el;
-}
-
-var CELL = 4,
-    SPACE = 4 * CELL,
-    acolor = [
-        '#99FFEF',
-        '#FFB599',
-        '#FF99E9',
-        '#00ff00',
-        '#ff0000',
-        '#ffffff'
-    ],
-    typeShips = {
-        SMALL_BOT : {
-            type : 0,
-            size : [8, 9],
-            pattern : [
-                [0, 0, 0, 1, 1, 0, 0, 0],
-                [0, 0, 1, 1, 1, 1, 0, 0],
-                [0, 1, 1, 1, 1, 1, 1, 0],
-                [1, 1, 0, 1, 1, 0, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1],
-                [0, 0, 1, 0, 0, 1, 0, 0],
-                [0, 1, 0, 1, 1, 0, 1, 0],
-                [1, 0, 1, 0, 0, 1, 0, 1]
-            ]
-        },
-        MID_BOT : {
-            type : 1,
-            size : [11, 8],
-            pattern : [
-                [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
-                [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                [0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0],
-                [0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1],
-                [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
-                [0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0]
-            ]
-        },
-        BIG_BOT : {
-            type : 2,
-            size : [12, 8],
-            pattern : [
-                [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
-                [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0],
-                [0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0],
-                [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
-            ]
-        },
-        SHIP : {
-            type : 3,
-            size : [7, 4],
-            pattern : [
-                [0, 0, 0, 1, 0, 0, 0],
-                [0, 0, 1, 1, 1, 0, 0],
-                [0, 1, 1, 1, 1, 1, 0],
-                [1, 1, 1, 1, 1, 1, 1]
-            ]
-        },
-        SHELL : {
-            type : 4,
-            size : [1, 2],
-            pattern : [
-                [1],
-                [1]
-            ]
-        },
-        UFO : {
-            type : 5,
-            size : [17, 6],
-            pattern : [
-                [1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1],
-                [0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0],
-                [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
-                [0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
-                [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
-            ]
-        }
-    },
-    initialised = false;
-
-function initShips() {
-    function drawBot(canvas, params) {
-        var ctx = canvas.getContext("2d");
-        ctx.globalAlpha = 1;
-
-        canvas.width = params.size[0] * CELL;
-        canvas.height = params.size[1] * CELL;
-
-        ctx.save();
-        ctx.fillStyle = acolor[params.type];
-        params.pattern.forEach(function(r, i) {
-            r.forEach(function(c, j) {
-                if (!c)
-                    return;
-                ctx.fillRect(j * CELL, i * CELL, CELL, CELL);
-            });
-        });
-        ctx.restore();
+    function makeScreen() {
+        d3.selectAll(".imgdata")
+            .attr("content", game.getPic());
+        d3.select("#echo").attr("src", game.getPic());
     }
 
-    d3.keys(typeShips).forEach(function(key) {
-        typeShips[key].buffer = document.createElement("canvas");
-        drawBot(typeShips[key].buffer, typeShips[key]);
-    })
-}
+    posGames();
 
-function ship(type, id, x, y) {
-    var bot = item(id, x, y);
-
-    bot.type = type;
-    bot.size = {
-        w : type.size[0] * CELL,
-        h : type.size[1] * CELL
-    };
-
-    bot.draw = function(canvas) {
-        if (!bot.visible)
+    function pauseGame() {
+        if (!game.runnig())
             return;
 
-        var ctx = canvas.getContext("2d"),
-            buf = bot.type.buffer;
-        if (buf) {
-            ctx.save();
-            /*ctx.translate(this.translate());
-             ctx.scale(this.scale());*/
+        makeScreen();
 
-            ctx.drawImage(buf,
-                bot.x,
-                bot.y
-            );
+        game.pauseGame();
 
-            ctx.fillStyle = "#ff0000";
-            ctx.fillRect(bot.x, bot.y, 1, 1);
+        game.moveShipToCenter(function() {
+            d3.selectAll(".games").classed("run", false);
+            d3.selectAll("li.run").classed("run", false);
 
-            ctx.restore();
-        }
-    };
+            d3.selectAll(".game_mode, .game_mode_gr")
+                    .transition()
+                    .duration(200)
+                    .style("opacity", 0)
+                    .each("end", function () {
+                        d3.select(this)
+                                .style("display", "none");
+                    });
 
-    bot.constructor = arguments.callee;
-    return bot;
-}
+            d3.select("#logoimg")
+                    .transition()
+                    .duration(500)
+                    .style("opacity", 1);
 
-function makeMap(w, h) {
-    var cSmall = Math.floor(w / ((typeShips.SMALL_BOT.size[0] * CELL) + SPACE)),
-        cMid =  Math.floor(w / ((typeShips.MID_BOT.size[0] * CELL) + SPACE)),
-        cBig =  Math.floor(w / ((typeShips.BIG_BOT.size[0] * CELL) + SPACE)),
-        y = SPACE;
+            backGame.style("display", null);
 
-    var map = [];
-    map.w = 0;
-    for(var i = 0; i < 5; i++) {
-        var pr = (i == 0
-            ? [ cSmall, typeShips.SMALL_BOT ]
-            : i > 0 && i < 3
-            ? [ cMid, typeShips.MID_BOT ]
-            : [ cBig, typeShips.BIG_BOT ]);
+            posGames();
 
-        for (var j = 0; j < pr[0] - 2; j++)
-            map.push(ship(pr[1], i + "_" + j, j * ((pr[1].size[0] * CELL) + SPACE), y));
-        map.w = Math.max(map.w, j * ((pr[1].size[0] * CELL) + SPACE));
-        y += pr[1].size[1] + SPACE * 2;
-    }
-    map.h = y + SPACE * 2;
-    map.x = 0;
-    map.y = 0;
-    return map;
-}
-
-function randomDisposition(map) {
-    map.forEach(function(c) {
-        c.visible = true; //(Math.round((Math.random() * 2) % 2) ? true : false);
-    });
-}
-
-function drawAliens(canvas, map, time) {
-    if (!(map instanceof Array))
-        return;
-
-    var ctx = canvas.getContext("2d");
-
-    canvas.width = map.w;
-    canvas.height = map.h;
-
-    params[0][1].innerText = "map [y]" + map.y;
-
-    ctx.save();
-    ctx.translate(0, time);
-    map.forEach(function(c) {
-        c.draw(canvas);
-    });
-    ctx.restore();
-}
-
-function checkKills(map, shells) {
-    var possible = shells.filter(function(s) {
-        return !s.deleted
-            && s.y >= map.y && s.y <= map.y + map.h
-            && s.x >= map.x && s.x <= map.x + map.w;
-    });
-    var killed = 0;
-    while(possible.length) {
-        var shell = possible.pop();
-
-        map.filter((function(shell) {
-            return function(b) {
-                params[0][0].innerText = "s [x, y]" + [shell.x, shell.y];
-                return !shell.deleted
-                    && b.visible
-                    && b.y + map.y + b.size.h >= shell.y
-                    && b.x + map.x < shell.x
-                    && b.x + map.x + b.size.w > shell.x
-                    && (params[0][2].innerText = "b [x, y, w, h, my]" + [b.x, b.y, b.size.w, b.size.h, map.y])
-                    && !(b.visible = false)
-                    && (shell.deleted = true);
-            }
-        })(shell));
-
-        if (shell.deleted)
-            killed++;
-    }
-    return killed;
-}
-
-function drawShells(canvas, shells, time) {
-    if(!(shells instanceof Array))
-        return;
-
-    var ctx = canvas.getContext("2d");
-    ctx.save();
-    var temp = shells.slice(0);
-    shells.splice(0, shells.length);
-    temp.forEach(function(s, i) {
-        ctx.clearRect(s.x, s.y, s.size.w, s.size.h);
-        s.y -= time;
-        if (s.y > 0 && !s.deleted) {
-            params[0][0].innerText = "shell [x, y]" + [s.x, s.y];
-            s.draw(canvas);
-            shells.push(s);
-        }
-    });
-    ctx.restore();
-}
-
-function addShells(arr, x, y) {
-    arr.push(ship(typeShips.SHELL, arr.length, x, y));
-}
-
-var params = [];
-
-function main() {
-    params = d3.selectAll('.param');
-    var div = d3.select("#games"),
-        w = div.node().clientWidth,
-        h = div.node().clientHeight,
-        posChange = true;
-
-    /*prop = w/h;
-     h = Math.sqrt(Math.pow(w, 2) + Math.pow(h, 2)) * 2 / 3;
-     w = h * prop;*/
-
-    var map = makeMap(w, h),
-        bot = ship(typeShips.SHIP, 'mainShip', 0, 0),
-        shells = [],
-        ufo = ship(typeShips.UFO, 'ufoShip', 0, 0),
-        shell_speed = 15;
-
-
-    bot.x = w/2 - bot.size.w/2;
-    bot.y = h - bot.size.h;
-
-    ufo.x = w/2 - ufo.size.w/2;
-    ufo.y = 0;
-
-    var canvas = div
-            .append("canvas")
-            .text("Your browser does not have support for Canvas.")
-            .attr("width", w + "px")
-            .attr("height", h + "px")
-        ,
-        bufCanvas = document.createElement("canvas");
-
-    d3.select(document).on("keydown", function() {
-        var e = d3.event;
-        switch(e.keyCode){
-            case 37:
-                bot.px = bot.x;
-                bot.x -= CELL * 2;
-                if (bot.x <= 0)
-                    bot.x = 0;
-                else
-                    posChange = true;
-                break;
-            case 39:
-                bot.px = bot.x;
-                bot.x += CELL * 2;
-                if (bot.x >= w - bot.size.w)
-                    bot.x = w - bot.size.w;
-                else
-                    posChange = true;
-                break;
-        }
-    });
-
-    d3.select(document).on("keypress", function() {
-        var e = d3.event;
-        switch(e.keyCode){
-            case 32:
-                addShells(shells, bot.x + bot.size.w/2, bot.y - 2 * CELL);
-                break;
-        }
-    });
-
-    var mainCtx = canvas.node().getContext("2d");
-    canvas.node().focus();
-
-    function newLevel() {
-        ufo.visible = true;
-        randomDisposition(map);
-        shells = [];
-        mainCtx.clearRect(0, 0, w, h);
-        lastBotPos = bot.x;
-        bot.x = w/2 - bot.size.w/2;
-        posChange = true;
+            slide("100%");
+            startGame.classed("hide", false);
+        });
     }
 
-    initShips();
-    newLevel();
+    function play(item) {
+        startGame.classed("hide", true);
+        slide(0);
 
-    var timeOff = 0,
-        timeOutMove = 0,
-        coff = 100,
-        kd = coff / (h - map.h - 100),
-        cklr = shell_speed / (map.length | 1),
-        klr = CELL;
+        backGame.style("display", "none");
 
-    function reinitStage() {
-        map.y = 100;
-        map.x = w/2 - map.w/2;
-        map.dir = 0;
-        newLevel();
-        coff = 100;
-        klr = CELL;
-        drawAliens(bufCanvas, map, 0);
-    }
-
-    reinitStage();
-
-    (function timer(time) {
-        requestAnimationFrame(timer);
-
-        mainCtx.save();
-        if (ufo.visible) {
-            mainCtx.clearRect(ufo.x, 0, ufo.size.w, ufo.size.h);
-            ufo.draw(canvas.node());
+        if (item.node() == startGame.node()) {
+            game.newGame();
+        }
+        else {
+            game.resumeGame();
         }
 
-        var killed = checkKills(map, shells);
-        timeOff--;
-        timeOutMove--;
-        if (timeOff <= 0 || killed || timeOutMove <= 0) {
-            var repaint = false;
+        d3.selectAll(".games").classed("run", true);
+        d3.selectAll(".likes>ul li:first-child").classed("run", true);
 
-            mainCtx.clearRect(map.x, map.y, bufCanvas.width, bufCanvas.height);
+        d3.selectAll(".game_mode, .game_mode_gr")
+                .style("display", "block")
+                .transition()
+                .duration(500)
+                .style("opacity", 1);
 
-            if (h - map.h < map.y || !map.filter(function(d){ return d.visible; }).length) {
-                reinitStage();
+        d3.select("#logoimg")
+                .transition()
+                .duration(500)
+                .style("opacity", .3);
+
+        d3.select(document).on("keyup.play", function () {
+            if (d3.event.keyCode == 27 || d3.event.keyCode == 80) {
+                pauseGame();
             }
+        });
+        makeScreen();
+    }
 
-            if (killed) {
-                coff -= (kd * 2) * killed;
-                klr += cklr * killed;
-                if (klr > shell_speed)
-                    klr = shell_speed;
-                repaint = true;
-            }
-            else if (timeOff <= 0) {
-                map.y += h * 0.02;
-                timeOff = coff;
-            }
+    function stopGame() {
+        pauseGame();
 
-            if (timeOutMove <= 0) {
-                if (map.dir) {
-                    map.x += klr;
-                    if (map.x + map.w > w) {
-                        map.dir = 0;
-                        map.x = w - map.w;
-                    }
+        game.stopGame();
+
+        backGame.style("display", "none");
+    }
+
+    function slide(max, del) {
+        startGame
+                .transition()
+                .delay(del || 1)
+                .duration(2000)
+                .style('max-width', max);
+    }
+
+    slide("100%", 1000);
+
+    d3.selectAll("a.lang_ru").on("click", function() {
+        d3.event.preventDefault();
+
+        var item = d3.select(this);
+        item.classed("hide", true);
+        d3.selectAll("span.lang_eng, a.lang_ru").style("display", "none");
+        d3.selectAll("a.lang_eng, span.lang_ru").style("display", null);
+        d3.selectAll("a.lang_eng").classed("hide", false);
+
+        d3.selectAll(".eng")
+                .transition()
+                .duration(1000)
+                .style("opacity", 0)
+                .each("end", function(item) {
+                    d3.select(this).style("display", "none");
+
+                    d3.selectAll(".ru")
+                            .style("opacity", 0)
+                            .style("display", null)
+                            .style("width", null)
+                            .transition()
+                            .duration(1000)
+                            .style("opacity", 1);
+                })
+        ;
+    });
+
+    d3.selectAll("a.lang_eng").on("click", function() {
+        d3.event.preventDefault();
+
+        var item = d3.select(this);
+        item.classed("hide", true);
+        d3.selectAll("span.lang_ru, a.lang_eng").style("display", "none");
+        d3.selectAll("a.lang_ru, span.lang_eng").style("display", null);
+        d3.selectAll("a.lang_ru").classed("hide", false);
+
+        d3.selectAll(".ru")
+                .transition()
+                .duration(1000)
+                .style("opacity", 0)
+                .each("end", function(item) {
+                    d3.select(this).style("display", "none");
+
+                    d3.selectAll(".eng")
+                            .style("opacity", 0)
+                            .style("display", null)
+                            .style("width", null)
+                            .transition()
+                            .duration(1000)
+                            .style("opacity", 1);
+                })
+                ;
+    });
+    game.stopGame();
+
+    d3.select("#share_button")
+        .on("click", function() {
+            d3.event.preventDefault();
+            game.imgData && $.ajax({
+                url: 'http://api.imgur.com/2/upload.json',
+                type: 'POST',
+                data: {
+                    type: 'base64',
+                    key: 'cd059636b01061d16eb49f72107c2cf6',
+                    name: 'screen',
+                    title: 'screen si',
+                    caption: 'screen si',
+                    image: game.imgData.split(',')[1]
+                },
+                dataType: 'json',
+                success: function(data) {
+                    return open(data.upload && data.upload.links && data.upload.links.original ? data.upload.links.original : 0);
+                },
+                error: function(rsp) {
+                    open();
+                    return console.log(rsp);
                 }
-                else {
-                    map.x -= klr;
-                    if (map.x < 0) {
-                        map.dir = 1;
-                        map.x = 0;
-                    }
-                }
-                timeOutMove = 20;
+            }) || open();
+            function open(imgurl) {
+                window.open('https://www.facebook.com/dialog/feed?' +
+                    'app_id=286934187985046&' +
+                    'link=' + encodeURIComponent(document.location) + '&' +
+                    'picture=' + (imgurl || 'http://artzub.com/works/si/game.png') + '&' +
+                    'name=' + encodeURIComponent(d3.select("title").text()) + '&' +
+                    'caption=Apus%20Agency&' +
+                    'description=' + encodeURIComponent(
+                        'Creative agency «Apus» appeared in 2008, and today, ' +
+                        'we - a team of specialists, successfully meet ' +
+                        'the challenges in the field of visual and digital communications.'
+                    ) + '&' +
+                    'redirect_uri=https://profiles.google.com/artzub');
+                hideShare();
             }
+        });
 
-            map.y = Math.floor(map.y);
-            map.x = Math.floor(map.x);
+    d3.select("#cancel_button").on("click",function() {
+        d3.event.preventDefault();
+        hideShare();
+    });
 
-            if (repaint)
-                drawAliens(bufCanvas, map, 0);
+    function hideShare() {
+        backGame.style("display", "none");
+        d3.select("#finishedForm")
+            .transition()
+            .duration(1000)
+            .style("opacity", 0)
+            .each("end", function() {
+                d3.select(this).style("display", "none");
+            });
+    }
 
-            mainCtx.drawImage(bufCanvas, map.x, map.y);
-        }
-
-        if (shells.length) {
-            drawShells(canvas.node(), shells, shell_speed);
-        }
-
-        if (posChange) {
-            mainCtx.clearRect(bot.px, bot.y, bot.size.w, bot.size.h);
-            bot.draw(canvas.node());
-            //lastBotPos = bot.x;
-            posChange = false;
-        }
-        mainCtx.restore();
-    })(0);
+    function facebookShare(s, l) {
+        game.imgData = game.getPic();
+        stopGame();
+        d3.select("#result").text(s);
+        d3.select("#finishedForm")
+            .style("opacity", 0)
+            .transition()
+            .duration(1000)
+            .style("opacity", 1)
+            .each("end", function() {
+                d3.select(this).style("display", "block");
+            });
+    }
 }

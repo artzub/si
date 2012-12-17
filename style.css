@@ -1,0 +1,563 @@
+/*
+html5doctor.com Reset Stylesheet
+v1.6.1
+Last Updated: 2010-09-17
+Author: Richard Clark - http://richclarkdesign.com
+Twitter: @rich_clark
+*/
+
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+    margin:0;
+    padding:0;
+    border:0;
+    outline:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
+}
+
+body {
+    line-height:1;
+}
+
+article,aside,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section {
+    display:block;
+}
+
+nav ul {
+    list-style:none;
+}
+
+blockquote, q {
+    quotes:none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content:'';
+    content:none;
+}
+
+a {
+    margin:0;
+    padding:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* change colours to suit your needs */
+ins {
+    background-color:#ff9;
+    color:#000;
+    text-decoration:none;
+}
+
+/* change colours to suit your needs */
+mark {
+    background-color:#ff9;
+    color:#000;
+    font-style:italic;
+    font-weight:bold;
+}
+
+del {
+    text-decoration: line-through;
+}
+
+abbr[title], dfn[title] {
+    border-bottom:1px dotted;
+    cursor:help;
+}
+
+table {
+    border-collapse:collapse;
+    border-spacing:0;
+}
+
+/* change border colour to suit your needs */
+hr {
+    display:block;
+    height:1px;
+    border:0;
+    border-top:1px solid #cccccc;
+    margin:1em 0;
+    padding:0;
+}
+
+input, select {
+    vertical-align:middle;
+}
+
+/*
+ Artem Zubkov (artzub@gmail.com | http://artzub.com)
+
+ Gradients generated on http://www.colorzilla.com/gradient-editor/
+*/
+
+
+html, body {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    max-height: 100%;
+    min-width: 450px;
+    min-height: 600px;
+    overflow: hidden;
+}
+
+.text_mode {
+    background: rgb(255,255,255); /* Old browsers */
+    /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPHJhZGlhbEdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNzUlIj4KICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjYzVjNWM1IiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L3JhZGlhbEdyYWRpZW50PgogIDxyZWN0IHg9Ii01MCIgeT0iLTUwIiB3aWR0aD0iMTAxIiBoZWlnaHQ9IjEwMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-radial-gradient(center, circle cover,  rgba(255,255,255,1) 0%, rgba(197,197,197,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(197,197,197,1))); /* Chrome,Safari4+ */
+    background: -webkit-radial-gradient(center, circle cover,  rgba(255,255,255,1) 0%,rgba(197,197,197,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-radial-gradient(center, circle cover,  rgba(255,255,255,1) 0%,rgba(197,197,197,1) 100%); /* Opera 12+ */
+    background: -ms-radial-gradient(center, circle cover,  rgba(255,255,255,1) 0%,rgba(197,197,197,1) 100%); /* IE10+ */
+    background: radial-gradient(circle at center,  rgba(255,255,255,1) 0%,rgba(197,197,197,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#c5c5c5',GradientType=1 ); /* IE6-8 fallback on horizontal gradient */
+
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+}
+
+.game_mode {
+    background: rgb(0,34,22); /* Old browsers */
+    /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPHJhZGlhbEdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNzUlIj4KICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwMDIyMTYiIHN0b3Atb3BhY2l0eT0iMSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDAwNDAyIiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L3JhZGlhbEdyYWRpZW50PgogIDxyZWN0IHg9Ii01MCIgeT0iLTUwIiB3aWR0aD0iMTAxIiBoZWlnaHQ9IjEwMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-radial-gradient(center, circle cover,  rgba(0,34,22,1) 0%, rgba(0,4,2,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(0,34,22,1)), color-stop(100%,rgba(0,4,2,1))); /* Chrome,Safari4+ */
+    background: -webkit-radial-gradient(center, circle cover,  rgba(0,34,22,1) 0%,rgba(0,4,2,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-radial-gradient(center, circle cover,  rgba(0,34,22,1) 0%,rgba(0,4,2,1) 100%); /* Opera 12+ */
+    background: -ms-radial-gradient(center, circle cover,  rgba(0,34,22,1) 0%,rgba(0,4,2,1) 100%); /* IE10+ */
+    background: radial-gradient(circle at center,  rgba(0,34,22,1) 0%,rgba(0,4,2,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#002216', endColorstr='#000402',GradientType=1 ); /* IE6-8 fallback on horizontal gradient */
+
+    background-repeat: no-repeat;
+
+    position: absolute;
+    top: -10%;
+    left: -20%;
+    opacity: 0;
+
+    width: 120%;
+    height: 110%;
+    overflow: hidden;
+    display: none;
+    background-attachment: scroll;
+}
+
+.game_mode_gr {
+    /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPHJhZGlhbEdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNzUlIj4KICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwMDIyMTYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPHN0b3Agb2Zmc2V0PSIyOSUiIHN0b3AtY29sb3I9IiMwMDE5MTAiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPHN0b3Agb2Zmc2V0PSI3MyUiIHN0b3AtY29sb3I9IiMwMDBjMDciIHN0b3Atb3BhY2l0eT0iMSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDAwNDAyIiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L3JhZGlhbEdyYWRpZW50PgogIDxyZWN0IHg9Ii01MCIgeT0iLTUwIiB3aWR0aD0iMTAxIiBoZWlnaHQ9IjEwMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-radial-gradient(center, circle cover,  rgba(0,34,22,0) 0%, rgba(0,25,16,0) 29%, rgba(0,12,7,1) 73%, rgba(0,4,2,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(0,34,22,0)), color-stop(29%,rgba(0,25,16,0)), color-stop(73%,rgba(0,12,7,1)), color-stop(100%,rgba(0,4,2,1))); /* Chrome,Safari4+ */
+    background: -webkit-radial-gradient(center, circle cover,  rgba(0,34,22,0) 0%,rgba(0,25,16,0) 29%,rgba(0,12,7,1) 73%,rgba(0,4,2,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-radial-gradient(center, circle cover,  rgba(0,34,22,0) 0%,rgba(0,25,16,0) 29%,rgba(0,12,7,1) 73%,rgba(0,4,2,1) 100%); /* Opera 12+ */
+    background: -ms-radial-gradient(center, circle cover,  rgba(0,34,22,0) 0%,rgba(0,25,16,0) 29%,rgba(0,12,7,1) 73%,rgba(0,4,2,1) 100%); /* IE10+ */
+    background: radial-gradient(circle at center,  rgba(0,34,22,0) 0%,rgba(0,25,16,0) 29%,rgba(0,12,7,1) 73%,rgba(0,4,2,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00002216', endColorstr='#000402',GradientType=1 ); /* IE6-8 fallback on horizontal gradient */
+
+    position: absolute;
+    top: -10%;
+    left: -20%;
+    opacity: 0;
+
+    width: 120%;
+    height: 110%;
+    overflow: hidden;
+    z-index: 11;
+    display: none;
+}
+
+a {
+    color: #33cc99;
+}
+
+a:hover {
+    color: #ff9600;
+}
+
+.header,
+.article,
+.footer {
+    position: relative;
+    width: 100%;
+}
+
+.header {
+    overflow: hidden;
+    z-index: 5;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.footer {
+    height: 33%;
+}
+
+.article {
+    height: 56%;
+    margin-top: 11%;
+    /*overflow: visible;*/
+}
+
+.header > div,
+.article > div,
+.footer > div {
+    position: relative;
+    padding-left: 8%;
+}
+
+.logo {
+    font-family: sans-serif, serif;
+    font-weight: bolder;
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+.logo > img {
+    position: absolute;
+    width: 400px;
+    height: auto;
+    bottom: 0;
+}
+
+.panel {
+    overflow: hidden;
+    overflow-y: auto;
+    position: relative;
+    height: 100%;
+}
+
+.panel > div {
+    font-family: arial, sans-serif;
+    font-size: 12pt;
+    text-align: justify;
+    float: left;
+    margin-top: 20px;
+    margin-right: 40px;
+    max-width: 420px;
+}
+
+.img-desc {
+    vertical-align: middle;
+}
+
+.img-desc > img,
+.img-desc > div {
+    display: inline-block;
+}
+
+.img-desc > img {
+    float: left;
+    margin-right: 30px;
+}
+
+.bl {
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+#games {
+    /*width: 50%;
+    height: 150%;*/
+    position: absolute;
+    z-index: 10;
+    bottom: -24%;
+    left: -20%;
+    margin: 0 auto;
+    -webkit-transform: skew(-45deg, 45deg) scale(.5, .5)/* translate(-71.5%, -81.5%)*/;
+    -moz-transform: skew(-45deg, 45deg) scale(.5, .5)/* translate(-71.5%, -81.5%)*/;
+    -o-transform: skew(-45deg, 45deg) scale(.5, .5)/* translate(-71.5%, -81.5%)*/;
+    -ms-transform: skew(-45deg, 45deg) scale(.5, .5)/* translate(-71.5%, -81.5%)*/;
+    transform: skew(-45deg, 45deg) scale(.5, .5)/* translate(-71.5%, -81.5%)*/;
+}
+
+#start_game {
+    max-width: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: 15;
+    text-shadow: 1px 1px 0.5px rgba(0, 0, 0, .5)/*rgba(31, 124, 93, .2)*/;
+}
+
+#start_game span {
+    display: inline-block;
+    padding: 4px 5px;
+    background: #33cc99;
+    font-size: 9pt;
+    font-weight: bold;
+    color: #f9f9f9;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.hide {
+    opacity: 0;
+    -webkit-transition: all 1000ms linear;
+    -moz-transition: all 1000ms linear;
+    -o-transition: all 1000ms linear;
+    -ms-transition: all 1000ms linear;
+    transition: all 1000ms linear;
+}
+
+.hgroup {
+    padding-top: 2%;
+    font-family: arial, sans-serif;
+    font-weight: bold;
+}
+
+.games {
+    width: 10em;
+    overflow: hidden;
+    float: left;
+    z-index: 14;
+}
+
+.games > span {
+    background: url('bg.png') left no-repeat;
+    display: inline-block;
+    padding-left: 28px;
+    height: 16px;
+    color: #000000;
+}
+
+span#score {
+    background-position: 0 0;
+}
+
+span#howtoplay {
+    background-position: 0 -17px;
+}
+
+.backtogame {
+    color: #000000;
+    padding: 0;
+    cursor: pointer;
+    background: transparent !important;
+    position: relative;
+}
+
+.backtogame:hover {
+    color: #ff9600 !important;
+}
+
+.games.run > span {
+    color: #ffffff;
+}
+
+.games.run span#score {
+    background-position: 0 -34px;
+}
+
+.games.run span#howtoplay {
+    background-position: 0 -50px;
+}
+
+div.likes {
+    z-index: 14;
+    padding: 0;
+    padding-top: 2%;
+    min-width: 30px;
+    overflow: hidden;
+}
+
+div.likes li {
+    list-style: none;
+    float: left;
+    overflow: hidden;
+    text-align: center;
+    padding: 0 2px;
+    display: block;
+    color: #000000;
+}
+
+div.likes li.run {
+    color: #ffffff;
+}
+
+.yeast {
+    cursor: pointer;
+    -o-animation: yeast-anim 2s ease-out infinite;
+}
+
+.yeast:hover {
+    -webkit-animation: 'yeast-anim' 2s ease-out infinite;
+    -moz-animation: 'yeast-anim' 2s ease-out infinite;    
+    -ms-animation: 'yeast-anim' 2s ease-out infinite;
+    animation: 'yeast-anim' 2s ease-out infinite;
+}
+
+@-webkit-keyframes 'yeast-anim' {
+    0%, 100%, 45%, 50% {
+        -webkit-transform: rotate(0);
+    }
+    5%, 15%, 25%, 35%, 55%, 65%, 75%, 85%, 95% {
+        -webkit-transform: rotate(5deg);
+    }
+    10%, 20%, 30%, 40%, 60%, 70%, 80%, 90% {
+        -webkit-transform: rotate(-10deg);
+    }
+}
+
+@-o-keyframes 'yeast-anim' {
+    0%, 100%, 45%, 50% {
+        -o-transform: rotate(0);
+    }
+    5%, 15%, 25%, 35%, 55%, 65%, 75%, 85%, 95% {
+        -o-transform: rotate(5deg);
+    }
+    10%, 20%, 30%, 40%, 60%, 70%, 80%, 90% {
+        -o-transform: rotate(-10deg);
+    }
+}
+
+@-moz-keyframes 'yeast-anim' {
+    0%, 100%, 45%, 50% {
+        -moz-transform: rotate(0);
+    }
+    5%, 15%, 25%, 35%, 55%, 65%, 75%, 85%, 95% {
+        -moz-transform: rotate(5deg);
+    }
+    10%, 20%, 30%, 40%, 60%, 70%, 80%, 90% {
+        -moz-transform: rotate(-10deg);
+    }
+}
+
+@-ms-keyframes 'yeast-anim' {
+    0%, 100%, 45%, 50% {
+        -ms-transform: rotate(0);
+    }
+    5%, 15%, 25%, 35%, 55%, 65%, 75%, 85%, 95% {
+        -ms-transform: rotate(5deg);
+    }
+    10%, 20%, 30%, 40%, 60%, 70%, 80%, 90% {
+        -ms-transform: rotate(-10deg);
+    }
+}
+
+@keyframes 'yeast-anim' {
+    0%, 100%, 45%, 50% {
+        transform: rotate(0);
+    }
+    5%, 15%, 25%, 35%, 55%, 65%, 75%, 85%, 95% {
+        transform: rotate(5deg);
+    }
+    10%, 20%, 30%, 40%, 60%, 70%, 80%, 90% {
+        transform: rotate(-10deg);
+    }
+}
+
+#help, #finishedForm {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /*background: rgba(51, 204, 153, 0.9);*/
+    background: rgba(41, 166, 124, 0.8);
+    font-family: arial, sans-serif;
+}
+
+#help>div, #finishedForm > div {
+    width: 353px;
+    margin: 0 auto;
+    margin-top: 30%;
+    text-align: center;
+}
+
+#finishedForm > div {
+    width: 70%;
+    min-width: 300px;
+    max-width: 610px;
+    margin-top: 20%;
+}
+
+
+#help .backtogame {
+    color: #fff;
+    margin-top: 3%;
+    display: block;
+}
+
+#finishedForm {
+    overflow: hidden;
+    display: none;
+}
+
+.ffc {
+    float: left;
+    width: 33%;
+}
+
+.ffr {
+    width: 100%;
+    overflow: hidden;
+}
+
+.bgt, .brt {
+    color: #f9f9f9;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.brt {
+    font-size: 16px;
+    font-weight: normal;
+    padding-top: 2px;
+}
+
+#share_button {
+    background: url('shb.png') 0 0 no-repeat;
+    height: 27px;
+    width: 128px;
+    margin: 26px auto 20px;
+}
+
+#share_button:hover {
+    background-position: 0 -28px;
+}
+
+#share_button:active {
+    background-position: 0 -56px;
+}
+
+#cancel_button {
+    color: #ffffff;
+}
+
+#cancel_button:hover {
+    color: #ff9600;
+}
+
+#finishedForm .fb_iframe_widget {
+    background: #fff;
+    float: left;
+    margin-right: 10px;
+}
+
+#finishedForm .fb_iframe_widget:last-child {
+    margin-right: 0;
+}

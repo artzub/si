@@ -1,58 +1,156 @@
 <!DOCTYPE html>
-<html>
+<html itemscope itemtype="http://schema.org/Organization" xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">
+<!--xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"  xmlns:fb="https://www.facebook.com/2008/fbml"-->
 <head>
-    <title>space invaders</title>
+    <meta charset="utf-8">
+
+    <meta class="titledata" itemprop="name" content="apus agency"/>
+    <meta class="titledata" property="og:title" content="apus agency" />
+
+    <meta class="descdata" itemprop="description" content="Creative agency «Apus» appeared in 2008, and today, we - a team of specialists, successfully meet the challenges in the field of visual and digital communications."/>
+    <meta class="descdata" property="og:description" content="Creative agency «Apus» appeared in 2008, and today, we - a team of specialists, successfully meet the challenges in the field of visual and digital communications."/>
+
+
+    <meta class="imgdata" itemprop="image" content=""/>
+    <meta class="imgdata" property="og:image" content=""/>
+
+    <!--<meta itemprop="image" content="">
+    <meta itemprop="image" content="">
+    <meta itemprop="image" content="">
+    <meta itemprop="image" content="">-->
+
+    <!--<meta property="og:title" content="" />
+    <meta property="og:type" content="" />
+    <meta class="imgdata" property="og:image" content="">
+    <meta property="og:image" content="">
+    <meta property="og:image" content="">
+    <meta property="og:image" content="">
+    <meta property="og:image" content="">
+    <meta property="og:site_name" content="" />
+    <meta property="fb:admins" content="" />-->
+
+    <title class="title">apus agency</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="d3.js"></script>
-    <script type="text/javascript" charset="ISO-8859-1" src="2.js"></script>
-    <style>
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-            background: #666;
-        }
-
-        #games {
-            width: 80%;
-            height: 100%;
-            overflow: hidden;
-            position: relative;
-            margin: 0 auto;
-            /*-webkit-transform-origin: 50%;*/
-            -webkit-transform: skew(-45deg, 45deg) /*rotateX(45deg) /*rotate(-45deg)*/ scale(.5, .5) translate(-10%, 5%);
-            /*rotate(45deg)tra;*/
-        }
-
-        #debug {
-            position: absolute;
-            overflow: hidden;
-            background: rgba(255, 255, 255, .5);
+    <script src="game.js"></script>
+    <script src="main.js"></script>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <!--[if gte IE 9]>
+    <style type="text/css">
+        .text_mode {
+            filter: none;
         }
     </style>
+    <![endif]-->
 </head>
-<body>
-    <div id="debug">
-        <ul>
-            <li class="param"></li>
-            <li class="param"></li>
-            <li class="param"></li>
-            <li class="param"></li>
-            <li class="param"></li>
-            <li class="param"></li>
-            <li class="param"></li>
-            <li class="param"></li>
-            <li class="param"></li>
-            <li class="param"></li>
-        </ul>
+<body class="text_mode" onload="init()">
+    <div class="game_mode"></div>
+    <div class="game_mode_gr"></div>
+
+        <div class="header">
+            <div class="hgroup games">
+                <span id="score" style="padding-top: 2px;">2 666</span>
+                <br /><br />
+                <span id="howtoplay"><span class="eng"><a href="#">how to play?</a></span><span class="ru" style="display: none"><a href="#">как играть?</a></span></span>
+                <br />
+                <span class="backtogame" style="display: none;padding-left: 7px"><span class="eng"><span style="font-size: 17px;">&rarr;</span> back to game</span><span class="ru" style="display:none;"><span style="font-size: 17px;">&rarr;</span> назад в игру</span></span>
+            </div>
+            <div class="hgroup likes">
+                <ul>
+                    <li style="padding-top: 2px">Like</li>
+                    <li id="fb-button-cont">
+                        <div id='fb-root'></div>
+                        <div class="fb-like" data-href="http://artzub.com/works/si/" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="arial"></div>
+                    </li>
+                    <li id="twitter-button-cont" style="width: 80px;">
+                        <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+                        <script>!function(d,s,id){
+                            var js,fjs=d.getElementsByTagName(s)[0];
+                            if(!d.getElementById(id)){
+                                js=d.createElement(s);
+                                js.id=id;
+                                js.src="//platform.twitter.com/widgets.js";
+                                fjs.parentNode.insertBefore(js,fjs);
+                            }
+                        }(document,"script","twitter-wjs");</script>
+                    </li>
+                    <li id="gp-button-cont">
+                        <div class="g-plusone" data-size="medium"></div>
+
+                        <script type="text/javascript">
+                          (function() {
+                            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+                            po.src = 'https://apis.google.com/js/plusone.js';
+                            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+                          })();
+                        </script>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="article">
+            <div class="logo">
+                <img src="logo.png" id="logoimg">
+                <div id="games">
+                    <img src="ship.png" id="shipImg" style="display: none">
+                </div>
+                <div id="start_game"><span class="eng">play the game!</span><span class="ru" style="display: none;">играть!</span></div>
+            </div>
+            <img id="echo" src="" alt="" style="display: none">
+        </div>
+        <div class="footer">
+            <div class="panel">
+                <div class="img-desc">
+                    <img src="book.png" class="yeast" alt="showreel '12">
+                    <div>
+                        <a href="#" class="lang_ru">ru</a><span class="lang_ru" style="display: none">ru</span> <a href="#" class="lang_eng" style="display: none">eng</a><span class="lang_eng">eng</span>
+                        <br /><br />
+                        <a href="" class="bl">showreel '12</a>
+                        <br />
+                        <br />
+                        (pdf 10,2 Mb)
+                    </div>
+                </div>
+                <div><span class="eng">Creative agency «Apus» appeared in 2008, and today, we - a team of specialists, successfully meet the challenges in the field of visual and digital communications.</span><span class="ru" style="display: none">Какойто русский текст, class="ru" можно добавить ко всем элементам которые должны поменять свой язык.</span></span></div>
+                <div>
+                    <a href="mailto:post@apus.ag">post@apus.ag</a>
+                    <br />
+                    <br />
+                    <a href="http://fb.com/user">facebook</a>
+                    <br />
+                    <a href="http://twitter/user">twitter</a>
+                </div>
+            </div>
+        </div>
+
+    <div id="help" style="display: none;">
+        <div>
+            <img src="help.png">
+            <a class="backtogame"><span class="eng">Back to game</span><span class="ru" style="display: none">Назад в игру</span></a>
+        </div>
     </div>
-    <div id="games">
+
+    <div id="finishedForm">
+        <div>
+            <div class="ffr bgt">Game over!</div>
+            <div class="ffr brt">Your results: <span id="result"></span> points!</div>
+            <div class="ffr">
+                <div id="share_button"></div>
+            </div>
+            <div class="ffr">
+                <div class="fb-like-box" data-href="https://www.facebook.com/olyspace" data-width="300" data-show-faces="true" data-stream="false" data-header="false"></div>
+                <script>(function(d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) return;
+                    js = d.createElement(s); js.id = id;
+                    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=141151189369644";
+                    fjs.parentNode.insertBefore(js, fjs);
+                }(document, 'script', 'facebook-jssdk'));</script>
+                <div class="fb-activity" data-site="http://artzub.com/works/si/" data-width="300" data-height="258" data-header="false" data-font="arial" data-recommendations="true"></div>
+                <!--<div class="fb-shared-activity" data-width="300" data-height="300" data-font="arial"></div>-->
+            </div>
+            <div class="ffr" style="text-align: center; margin-top: 3%;"><a id="cancel_button">close</a></div>
+        </div>
     </div>
-    <script type="text/javascript">
-        main();
-    </script>
 </body>
 </html>
