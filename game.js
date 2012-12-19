@@ -788,7 +788,7 @@ function createGamePlay(selector, _w, _h, _s, refresh, gameOver) {
         p = temp.width / (canvas.node().width || 1);
         cxt.scale(p, p);
         cxt.fillStyle = "#00130c";
-        cxt.fillRect(0, 0, w, temp.h);
+        cxt.fillRect(0, 0, canvas.node().width, canvas.node().height);
         cxt.drawImage(canvas.node(), 0, 0);
         cxt.restore();
         return temp.toDataURL();
