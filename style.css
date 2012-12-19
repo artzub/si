@@ -202,7 +202,7 @@ a:hover {
 
 .header {
     overflow: hidden;
-    z-index: 5;
+    z-index: 14;
     position: absolute;
     top: 0;
     left: 0;
@@ -329,13 +329,12 @@ a:hover {
     width: 10em;
     overflow: hidden;
     float: left;
-    z-index: 14;
 }
 
 .games > span {
     background: url('bg.png') left no-repeat;
     display: inline-block;
-    padding-left: 28px;
+    padding-left: 33px;
     height: 16px;
     color: #000000;
 }
@@ -396,17 +395,17 @@ div.likes li.run {
 
 .yeast {
     cursor: pointer;
-    -o-animation: yeast-anim 2s ease-out infinite;
 }
 
 .yeast:hover {
-    -webkit-animation: 'yeast-anim' 2s ease-out infinite;
-    -moz-animation: 'yeast-anim' 2s ease-out infinite;    
-    -ms-animation: 'yeast-anim' 2s ease-out infinite;
-    animation: 'yeast-anim' 2s ease-out infinite;
+    -webkit-animation: yeast-anim 2s ease-out infinite;
+    -moz-animation: yeast-anim 2s ease-out infinite;
+    -ms-animation: yeast-anim 2s ease-out infinite;
+    -o-animation: yeast-anim 2s ease-out infinite;
+    animation: yeast-anim 2s ease-out infinite;
 }
 
-@-webkit-keyframes 'yeast-anim' {
+@-webkit-keyframes yeast-anim {
     0%, 100%, 45%, 50% {
         -webkit-transform: rotate(0);
     }
@@ -418,7 +417,7 @@ div.likes li.run {
     }
 }
 
-@-o-keyframes 'yeast-anim' {
+@-o-keyframes yeast-anim {
     0%, 100%, 45%, 50% {
         -o-transform: rotate(0);
     }
@@ -430,7 +429,7 @@ div.likes li.run {
     }
 }
 
-@-moz-keyframes 'yeast-anim' {
+@-moz-keyframes yeast-anim {
     0%, 100%, 45%, 50% {
         -moz-transform: rotate(0);
     }
@@ -442,7 +441,7 @@ div.likes li.run {
     }
 }
 
-@-ms-keyframes 'yeast-anim' {
+@-ms-keyframes yeast-anim {
     0%, 100%, 45%, 50% {
         -ms-transform: rotate(0);
     }
@@ -454,7 +453,7 @@ div.likes li.run {
     }
 }
 
-@keyframes 'yeast-anim' {
+@keyframes yeast-anim {
     0%, 100%, 45%, 50% {
         transform: rotate(0);
     }

@@ -292,7 +292,7 @@ function init() {
         }) || open();
         function open(imgurl) {
             window.open('https://www.facebook.com/dialog/feed?' +
-                'app_id=286934187985046&' +
+                'app_id=141151189369644&' +
                 'link=' + encodeURIComponent(document.location) + '&' +
                 'picture=' + (imgurl || 'http://artzub.com/works/si/game.png') + '&' +
                 'name=' + encodeURIComponent(d3.select("title").text()) + '&' +
@@ -302,7 +302,10 @@ function init() {
                     'we - a team of specialists, successfully meet ' +
                     'the challenges in the field of visual and digital communications.'
             ) + '&' +
-                'redirect_uri=https://profiles.google.com/artzub');
+                'redirect_uri=https://www.facebook.com/Apus.agency', "Share",
+                "width=200" + window.outerWidth * .6 + ", height=" + window.outerHeight * .7 +
+                ", left=" + window.outerWidth * .4 + ", top=" + window.outerHeight * .35
+            );
         }
     }
 

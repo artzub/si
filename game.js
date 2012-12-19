@@ -15,7 +15,7 @@
     if (!window.requestAnimationFrame)
         window.requestAnimationFrame = function(callback, element) {
             var currTime = new Date().getTime();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var timeToCall = Math.max(2, 16 - (currTime - lastTime));
             var id = window.setTimeout(function() { callback(currTime + timeToCall); },
                 timeToCall);
             lastTime = currTime + timeToCall;
@@ -76,7 +76,7 @@ var CELL = 4,
     typeShips = {
         SMALL_BOT : {
             type : 0,
-            cost : 300,
+            cost : 40,
             size : [8, 9],
             pattern : [
                 [0, 0, 0, 1, 1, 0, 0, 0],
@@ -88,11 +88,33 @@ var CELL = 4,
                 [0, 0, 1, 0, 0, 1, 0, 0],
                 [0, 1, 0, 1, 1, 0, 1, 0],
                 [1, 0, 1, 0, 0, 1, 0, 1]
+            ],
+            blink : [
+                [0, 0, 0, 1, 1, 0, 0, 0],
+                [0, 0, 1, 1, 1, 1, 0, 0],
+                [0, 1, 1, 1, 1, 1, 1, 0],
+                [1, 1, 0, 1, 1, 0, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1],
+                [0, 1, 0, 1, 1, 0, 1, 0],
+                [1, 0, 0, 0, 0, 0, 0, 1],
+                [0, 1, 0, 0, 0, 0, 1, 0]
+            ],
+            crash : [
+                [1, 1, 0, 0, 0, 0, 1, 0],
+                [1, 1, 0, 0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 1, 0, 0, 1],
+                [1, 1, 0, 1, 0, 0, 1, 0],
+                [0, 0, 1, 0, 0, 1, 0, 0],
+                [0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 1, 0, 0, 1, 0, 0],
+                [1, 1, 0, 0, 0, 0, 1, 0],
+                [0, 1, 0, 0, 0, 0, 0, 1]
             ]
         },
         MID_BOT : {
             type : 1,
-            cost : 200,
+            cost : 30,
             size : [11, 8],
             pattern : [
                 [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
@@ -103,11 +125,31 @@ var CELL = 4,
                 [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1],
                 [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
                 [0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0]
+            ],
+            blink : [
+                [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
+                [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+                [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+                [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+                [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
+                [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+            ],
+            crash : [
+                [1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+                [0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0],
+                [1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0],
+                [0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+                [0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0],
+                [1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1],
+                [0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0],
+                [0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0]
             ]
         },
         BIG_BOT : {
             type : 2,
-            cost : 100,
+            cost : 10,
             size : [12, 8],
             pattern : [
                 [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
@@ -118,6 +160,26 @@ var CELL = 4,
                 [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0],
                 [0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0],
                 [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
+            ],
+            blink : [
+                [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+                [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0],
+                [0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0],
+                [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0]
+            ],
+            crash : [
+                [1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+                [0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0],
+                [0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0],
+                [0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1],
+                [1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0],
+                [0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0],
+                [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0],
+                [1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1]
             ]
         },
         SHIP : {
@@ -128,6 +190,12 @@ var CELL = 4,
                 [0, 0, 1, 1, 1, 0, 0],
                 [0, 1, 1, 1, 1, 1, 0],
                 [1, 1, 1, 1, 1, 1, 1]
+            ],
+            crash : [
+                [1, 0, 0, 0, 0, 1, 1],
+                [1, 1, 1, 0, 0, 1, 0],
+                [0, 1, 1, 0, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 0]
             ]
         },
         SHELL : {
@@ -164,11 +232,12 @@ var CELL = 4,
             ]
         }
     },
+    __crashLive = 3,
     __score = 0,
     __level = 4;
 
 function initShips() {
-    function drawBot(canvas, params) {
+    function drawBot(canvas, params, pattern) {
         var ctx = canvas.getContext("2d");
         ctx.globalAlpha = 1;
 
@@ -177,7 +246,10 @@ function initShips() {
 
         ctx.save();
         ctx.fillStyle = acolor[params.type];
-        params.pattern.forEach(function(r, i) {
+
+        if (!pattern)
+            pattern = params.pattern;
+        pattern.forEach(function(r, i) {
             r.forEach(function(c, j) {
                 if (!c)
                     return;
@@ -190,7 +262,17 @@ function initShips() {
     d3.keys(typeShips).forEach(function(key) {
         typeShips[key].buffer = document.createElement("canvas");
         drawBot(typeShips[key].buffer, typeShips[key]);
-    })
+        if (typeShips[key].blink) {
+            typeShips[key].needBlink = 1;
+            typeShips[key].blinkBuffer = document.createElement("canvas");
+            drawBot(typeShips[key].blinkBuffer, typeShips[key], typeShips[key].blink);
+        }
+        if (typeShips[key].crash) {
+            typeShips[key].needCrash = 1;
+            typeShips[key].crashBuffer = document.createElement("canvas");
+            drawBot(typeShips[key].crashBuffer, typeShips[key], typeShips[key].crash);
+        }
+    });
 }
 
 function ship(type, id, x, y) {
@@ -202,12 +284,22 @@ function ship(type, id, x, y) {
         h : type.size[1] * CELL
     };
 
-    bot.draw = function(canvas) {
-        if (!bot.visible)
+    bot.draw = function(canvas, blink) {
+        if (!bot.visible && !bot.crashed)
             return;
 
         var ctx = canvas.getContext("2d"),
             buf = bot.type.buffer;
+
+        if (blink)
+            buf = bot.type.blinkBuffer || buf;
+
+        if (bot.crashed) {
+            bot.visible = false;
+            buf = bot.type.crashBuffer || buf;
+            bot.crashed--;
+        }
+
         if (buf) {
             ctx.save();
 
@@ -267,10 +359,12 @@ function calcRectAliens(map) {
 
 function randomDisposition(map) {
     map.forEach(function(c) {
-        c.visible = true; //(Math.round((Math.random() * 2) % 2) ? true : false);
+        c.visible = (Math.round((Math.random() * 2) % 2) ? true : false);
+        c.crashed = 0;
     });
 }
 
+var blinkState = true;
 function drawAliens(canvas, map, time) {
     if (!(map instanceof Array))
         return;
@@ -282,8 +376,9 @@ function drawAliens(canvas, map, time) {
 
     ctx.save();
     ctx.translate(0, time);
+    blinkState = !blinkState;
     map.forEach(function(c) {
-        c.draw(canvas);
+        c.draw(canvas, blinkState);
     });
     ctx.restore();
 }
@@ -302,10 +397,11 @@ function checkKills(map, shells) {
             return function(b) {
                 return !shell.deleted
                     && b.visible
+                    && !b.crashed
                     && b.y + map.y + b.size.h >= shell.y
                     && b.x + map.x < shell.x + shell.size.w
                     && b.x + map.x + b.size.w > shell.x
-                    && !(b.visible = false)
+                    && (b.crashed = __crashLive)
                     && (shell.deleted = true)
                     && (__score += b.type.cost);
             }
@@ -357,6 +453,9 @@ var pause = true,
 
 function createGamePlay(selector, _w, _h, _s, refresh, gameOver) {
     //TODO scale
+
+    var __game = this;
+
     _s = _s || [1, 1];
     _s = [1, 1];//_s && _s instanceof Array ? _s : [parseInt(_s) || 1, parseInt(_s) || 1];
 
@@ -437,6 +536,8 @@ function createGamePlay(selector, _w, _h, _s, refresh, gameOver) {
         aShells = [];
         mainCtx.clearRect(0, 0, w, h);
         bot.x = w/2 - bot.size.w/2;
+        bot.visible = true;
+        bot.crashed = 0;
         posChange = true;
         refresh(__score, __level);
     }
@@ -544,9 +645,15 @@ function createGamePlay(selector, _w, _h, _s, refresh, gameOver) {
                 var repaint = false;
 
                 if (h - map.h - bot.size.h < map.y || !vlen.length || !alive) {
-                    (!alive || vlen.length) && gameOver(__score, __level) && ((__level = 0) || (__score = 0));
+                    mainCtx.clearRect(bot.px, bot.y, bot.size.w, bot.size.h);
+                    bot.draw(canvas.node());
+                    if(!alive) {
+                        gameOver(__score, __level);
+                        __score = 0;
+                    }
                     reInitStage();
-                    return;
+                    if (!alive)
+                        return;
                 }
 
                 mainCtx.clearRect(map.x, map.y, bufCanvas.width, bufCanvas.height);
@@ -587,6 +694,7 @@ function createGamePlay(selector, _w, _h, _s, refresh, gameOver) {
                 map.y = Math.floor(map.y);
                 map.x = Math.floor(map.x);
 
+                repaint = true;
                 if (repaint)
                     drawAliens(bufCanvas, map, 0);
 
@@ -606,8 +714,8 @@ function createGamePlay(selector, _w, _h, _s, refresh, gameOver) {
                 && bot.x < cp + bot.slideSpeed)) {
                 bot.x = w/2 - bot.size.w/2;
                 bot.moveToCenter = false;
-                if (this.onFinish)
-                    this.onFinish(this, {x : bot.x, y : bot.y});
+                if (__game.onFinish)
+                    __game.onFinish(__game, {x : bot.x, y : bot.y});
             }
             posChange = true;
         }
@@ -621,7 +729,7 @@ function createGamePlay(selector, _w, _h, _s, refresh, gameOver) {
     }
 
 
-    this.newGame = function() {
+    __game.newGame = function() {
         __score = 0;
         //__level = 0;
         dirLeft = dirRight = 0;
@@ -632,7 +740,7 @@ function createGamePlay(selector, _w, _h, _s, refresh, gameOver) {
         timer();
     };
 
-    this.paused = function() {
+    __game.paused = function() {
         return pause;
     };
 
@@ -640,20 +748,20 @@ function createGamePlay(selector, _w, _h, _s, refresh, gameOver) {
         return !pause && !stop;
     }
 
-    this.runnig = __running;
+    __game.runnig = __running;
 
-    this.stopGame = function() {
+    __game.stopGame = function() {
         stop = true;
         pause = false;
         dirLeft = dirRight = 0;
     };
 
-    this.pauseGame = function() {
+    __game.pauseGame = function() {
         pause = true;
         dirLeft = dirRight = 0;
     };
 
-    this.resumeGame = function() {
+    __game.resumeGame = function() {
         bot.px = bot.x;
         bot.x = bot.lx || bot.x;
         bot.y = bot.ly || bot.y;
@@ -662,14 +770,14 @@ function createGamePlay(selector, _w, _h, _s, refresh, gameOver) {
         timer();
     };
 
-    this.shipCoord = function() {
+    __game.shipCoord = function() {
         return {
             x : bot.x,
             y : bot.y
         };
     };
 
-    this.getPic = function(w) {
+    __game.getPic = function(w) {
         var temp = document.createElement('canvas'),
             cxt = temp.getContext("2d"),
             p = Math.abs(canvas.node().height / (canvas.node().width || 1));
@@ -679,26 +787,28 @@ function createGamePlay(selector, _w, _h, _s, refresh, gameOver) {
         cxt.save();
         p = temp.width / (canvas.node().width || 1);
         cxt.scale(p, p);
+        cxt.fillStyle = "#00130c";
+        cxt.fillRect(0, 0, w, temp.h);
         cxt.drawImage(canvas.node(), 0, 0);
         cxt.restore();
         return temp.toDataURL();
     };
 
-    this.moveShipToCenter = function(onFinish, speed) {
+    __game.moveShipToCenter = function(onFinish, speed) {
         dirLeft = dirRight = 0;
         bot.lx = bot.x;
         bot.ly = bot.y;
         bot.slideSpeed = speed || CELL;
         bot.dir = (bot.x > w/2 - bot.size.w/2 ? -1 : 1);
         bot.moveToCenter = true;
-        this.onFinish = onFinish || 0;
+        __game.onFinish = onFinish || 0;
         if (bot.x == w/2 - bot.size.w/2) {
             bot.moveToCenter = false;
-            this.onFinish && this.onFinish(this, {x : bot.x, y : bot.y});
+            __game.onFinish && __game.onFinish(__game, {x : bot.x, y : bot.y});
         }
     };
 
     timer();
     stop = true;
-    return this;
+    return __game;
 }
