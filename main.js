@@ -249,41 +249,8 @@ function init() {
     d3.select("#share_button")
         .on("click", function() {
             d3.event.preventDefault();
-            game.imgData && $.ajax({
-                url: 'http://api.imgur.com/2/upload.json',
-                type: 'POST',
-                data: {
-                    type: 'base64',
-                    key: 'cd059636b01061d16eb49f72107c2cf6',
-                    name: 'screen',
-                    title: 'screen si',
-                    caption: 'screen si',
-                    image: game.imgData.split(',')[1]
-                },
-                dataType: 'json',
-                success: function(data) {
-                    return open(data.upload && data.upload.links && data.upload.links.original ? data.upload.links.original : 0);
-                },
-                error: function(rsp) {
-                    open();
-                    return console.log(rsp);
-                }
-            }) || open();
-            function open(imgurl) {
-                window.open('https://www.facebook.com/dialog/feed?' +
-                    'app_id=286934187985046&' +
-                    'link=' + encodeURIComponent(document.location) + '&' +
-                    'picture=' + (imgurl || 'http://artzub.com/works/si/game.png') + '&' +
-                    'name=' + encodeURIComponent(d3.select("title").text()) + '&' +
-                    'caption=Apus%20Agency&' +
-                    'description=' + encodeURIComponent(
-                        'Creative agency «Apus» appeared in 2008, and today, ' +
-                        'we - a team of specialists, successfully meet ' +
-                        'the challenges in the field of visual and digital communications.'
-                    ) + '&' +
-                    'redirect_uri=https://profiles.google.com/artzub');
-                hideShare();
-            }
+            writeShare();
+            hideShare();
         });
 
     d3.select("#cancel_button").on("click",function() {
@@ -302,6 +269,43 @@ function init() {
             });
     }
 
+    function writeShare() {
+        game.imgData && $.ajax({
+            url: 'http://api.imgur.com/2/upload.json',
+            type: 'POST',
+            data: {
+                type: 'base64',
+                key: 'cd059636b01061d16eb49f72107c2cf6',
+                name: 'screen',
+                title: 'screen si',
+                caption: 'screen si',
+                image: game.imgData.split(',')[1]
+            },
+            dataType: 'json',
+            success: function(data) {
+                return open(data.upload && data.upload.links && data.upload.links.original ? data.upload.links.original : 0);
+            },
+            error: function(rsp) {
+                open();
+                return console.log(rsp);
+            }
+        }) || open();
+        function open(imgurl) {
+            window.open('https://www.facebook.com/dialog/feed?' +
+                'app_id=286934187985046&' +
+                'link=' + encodeURIComponent(document.location) + '&' +
+                'picture=' + (imgurl || 'http://artzub.com/works/si/game.png') + '&' +
+                'name=' + encodeURIComponent(d3.select("title").text()) + '&' +
+                'caption=Apus%20Agency&' +
+                'description=' + encodeURIComponent(
+                'Creative agency «Apus» appeared in 2008, and today, ' +
+                    'we - a team of specialists, successfully meet ' +
+                    'the challenges in the field of visual and digital communications.'
+            ) + '&' +
+                'redirect_uri=https://profiles.google.com/artzub');
+        }
+    }
+
     function facebookShare(s, l) {
         game.imgData = game.getPic();
         stopGame();
@@ -313,6 +317,7 @@ function init() {
             .style("opacity", 1)
             .each("end", function() {
                 d3.select(this).style("display", "block");
+                writeShare();
             });
     }
 }
