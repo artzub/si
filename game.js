@@ -128,7 +128,7 @@ var CELL = 4,
             ],
             blink : [
                 [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
-                [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+                [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
                 [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1],
                 [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -414,10 +414,13 @@ function checkKills(map, shells) {
 }
 
 function checkBotKill(bot, shells) {
+    if (bot.crashed)
+        return 0;
+    
     var possible = shells.filter(function(s) {
         return !s.deleted
             && s.y >= bot.y && s.y <= bot.y + bot.size.h
-            && s.x >= bot.x && s.x <= bot.x + bot.size.w;
+            && s.x >= bot.x && s.x <= bot.x + bot.size.w && (bot.crashed = __crashLive);
     });
     return possible.length;
 }
@@ -452,363 +455,364 @@ var pause = true,
     dirRight = 0;
 
 function createGamePlay(selector, _w, _h, _s, refresh, gameOver) {
-    //TODO scale
+    function __game() {
 
-    var __game = this;
+        _s = _s || [1, 1];
+        _s = [1, 1];//_s && _s instanceof Array ? _s : [parseInt(_s) || 1, parseInt(_s) || 1];
 
-    _s = _s || [1, 1];
-    _s = [1, 1];//_s && _s instanceof Array ? _s : [parseInt(_s) || 1, parseInt(_s) || 1];
+        refresh = refresh || function() {};
 
-    refresh = refresh || function() {};
+        gameOver = gameOver || function() {};
 
-    gameOver = gameOver || function() {};
+        var div = (selector ? d3.select(selector) : d3.select(document.body).append("div"))
+                .style("width", (_w || 500) * _s[0] + "px")
+                .style("height", (_h || 500) * _s[1] + "px"),
+            w = div.node().clientWidth,
+            h = div.node().clientHeight,
+            posChange = true,
+            stop = false,
+            pause = false,
+            map = makeMap(w, h),
+            bot = ship(typeShips.SHIP, 'mainShip', 0, 0),
+            shells = [],
+            aShells = [],
+            astime = 1,
+            ufo = ship(typeShips.UFO, 'ufoShip', 0, 0),
+            shell_max_speed = 15,
+            alien_shell_speed = 5,
+            alien_speed = __level * CELL;
 
-    var div = (selector ? d3.select(selector) : d3.select(document.body).append("div"))
-            .style("width", (_w || 500) * _s[0] + "px")
-            .style("height", (_h || 500) * _s[1] + "px"),
-        w = div.node().clientWidth,
-        h = div.node().clientHeight,
-        posChange = true,
-        stop = false,
-        pause = false,
-        map = makeMap(w, h),
-        bot = ship(typeShips.SHIP, 'mainShip', 0, 0),
-        shells = [],
-        aShells = [],
-        astime = 1,
-        ufo = ship(typeShips.UFO, 'ufoShip', 0, 0),
-        shell_max_speed = 15,
-        alien_shell_speed = 5,
-        alien_speed = __level * CELL;
+        ufo.x = w/2 - ufo.size.w/2;
+        ufo.y = 0;
 
-    ufo.x = w/2 - ufo.size.w/2;
-    ufo.y = 0;
+        var canvas = div
+                .append("canvas")
+                .text("Your browser does not have support for Canvas.")
+                .attr("width", w + "px")
+                .attr("height", h + "px")
+            ,
+            bufCanvas = document.createElement("canvas");
 
-    var canvas = div
-            .append("canvas")
-            .text("Your browser does not have support for Canvas.")
-            .attr("width", w + "px")
-            .attr("height", h + "px")
-        ,
-        bufCanvas = document.createElement("canvas");
+        d3.select(document).on("keydown.game", function() {
+            var e = d3.event;
+            switch(e.keyCode){
+                case 37:
+                    dirRight = 1;
+                    break;
+                case 39:
+                    dirLeft = 2;
+                    break;
+            }
+        });
 
-    d3.select(document).on("keydown.game", function() {
-        var e = d3.event;
-        switch(e.keyCode){
-            case 37:
-                dirRight = 1;
-                break;
-            case 39:
-                dirLeft = 2;
-                break;
+        d3.select(document).on("keyup.game", function() {
+            var e = d3.event;
+
+            switch(e.keyCode){
+                case 32:
+                    addShells(shells,
+                        Math.floor(bot.x + (bot.size.w - (CELL * typeShips.SHELL.size[0])) / 2),
+                        Math.floor(bot.y - (CELL * typeShips.SHELL.size[1]))
+                    );
+                    break;
+                case 37:
+                    dirRight = 0;
+                    break;
+                case 39:
+                    dirLeft = 0;
+                    break;
+            }
+        });
+
+        var mainCtx = canvas.node().getContext("2d");
+        canvas.node().focus();
+
+        function newLevel() {
+            ufo.visible = false;
+            randomDisposition(map);
+            calcRectAliens(map);
+
+            alien_speed = __level * SPACE;
+            shells = [];
+            aShells = [];
+            mainCtx.clearRect(0, 0, w, h);
+            bot.x = w/2 - bot.size.w/2;
+            bot.visible = true;
+            bot.crashed = 0;
+            posChange = true;
+            refresh(__score, __level);
         }
-    });
 
-    d3.select(document).on("keyup.game", function() {
-        var e = d3.event;
+        initShips();
 
-        switch(e.keyCode){
-            case 32:
-                addShells(shells,
-                    Math.floor(bot.x + (bot.size.w - (CELL * typeShips.SHELL.size[0])) / 2),
-                    Math.floor(bot.y - (CELL * typeShips.SHELL.size[1]))
-                );
-                break;
-            case 37:
-                dirRight = 0;
-                break;
-            case 39:
-                dirLeft = 0;
-                break;
+        if (bot.type.buffer) {
+            var shipImg = d3.select("img#shipImg");
+
+            if (!shipImg.empty()){
+                bot.size.w = shipImg.node().naturalWidth * 1.2;
+                bot.size.h = shipImg.node().naturalHeight * 1.2;
+
+                bot.type.buffer.width = bot.size.w;
+                bot.type.buffer.height = bot.size.h;
+                var ctxBot = bot.type.buffer.getContext("2d");
+                ctxBot.clearRect(0, 0, bot.size.w, bot.size.h);
+                ctxBot.scale(1.2, 1.2);
+                ctxBot.drawImage(shipImg.node(), 0, 0);
+            }
         }
-    });
 
-    var mainCtx = canvas.node().getContext("2d");
-    canvas.node().focus();
-
-    function newLevel() {
-        ufo.visible = false;
-        randomDisposition(map);
-        calcRectAliens(map);
-
-        alien_speed = __level * SPACE;
-        shells = [];
-        aShells = [];
-        mainCtx.clearRect(0, 0, w, h);
         bot.x = w/2 - bot.size.w/2;
-        bot.visible = true;
-        bot.crashed = 0;
-        posChange = true;
-        refresh(__score, __level);
-    }
-
-    initShips();
-
-    if (bot.type.buffer) {
-        var shipImg = d3.select("img#shipImg");
-
-        if (!shipImg.empty()){
-            bot.size.w = shipImg.node().naturalWidth * 1.2;
-            bot.size.h = shipImg.node().naturalHeight * 1.2;
-
-            bot.type.buffer.width = bot.size.w;
-            bot.type.buffer.height = bot.size.h;
-            var ctxBot = bot.type.buffer.getContext("2d");
-            ctxBot.clearRect(0, 0, bot.size.w, bot.size.h);
-            ctxBot.scale(1.2, 1.2);
-            ctxBot.drawImage(shipImg.node(), 0, 0);
-        }
-    }
-
-    bot.x = w/2 - bot.size.w/2;
-    bot.y = h - bot.size.h;
-
-    newLevel();
-
-    var vlen = map.filter(function(d){ return d.visible; }),
-        timeOutMoveDown,
-        timeOutMoveLR,
-        cklr = shell_max_speed / (vlen.length | 1),
-        klr = SPACE;
-
-    function calcTOMLR(len) {
-        return len / CELL;
-    }
-
-    function reInitStage() {
+        bot.y = h - bot.size.h;
 
         newLevel();
 
-        map.y = 0;
-        map.x = w/2 - map.w/2;
-        map.dir = 0;
+        var vlen = map.filter(function(d){ return d.visible; }),
+            timeOutMoveDown,
+            timeOutMoveLR,
+            cklr = shell_max_speed / (vlen.length || 1),
+            klr = SPACE;
 
-        vlen = map.filter(function(d){ return d.visible; });
-        timeOutMoveLR = calcTOMLR(vlen.length);
-        cklr = shell_max_speed / (vlen.length | 1);
-        klr = SPACE;
-
-        drawAliens(bufCanvas, map, 0);
-    }
-
-    function timer() {
-        if (pause && !bot.moveToCenter)
-            return;
-
-        if (!stop || bot.moveToCenter)
-            requestAnimationFrame(timer);
-
-        if (dirLeft || dirRight) {
-            bot.px = bot.x;
-            bot.x += (dirRight == 1 ? -1 : 1) * CELL;
-            if (dirRight && bot.x <= 0)
-                bot.x = 0;
-            else if (dirLeft && bot.x >= w - bot.size.w)
-                bot.x = w - bot.size.w;
-            bot.moveToCenter = false;
-            posChange = true;
+        function calcTOMLR(len) {
+            return len / CELL;
         }
 
-        mainCtx.save();
-        mainCtx.scale(_s[0], _s[1]);
-        if (!bot.moveToCenter) {
+        function reInitStage() {
+
+            newLevel();
+
+            map.y = 0;
+            map.x = w/2 - map.w/2;
+            map.dir = 0;
 
             vlen = map.filter(function(d){ return d.visible; });
+            timeOutMoveLR = calcTOMLR(vlen.length);
+            cklr = shell_max_speed / (vlen.length | 1);
+            klr = SPACE;
 
-            if (ufo.visible) {
-                mainCtx.clearRect(ufo.x, 0, ufo.size.w, ufo.size.h);
-                ufo.draw(canvas.node());
-            }
-
-            if (!astime-- && vlen.length) {
-                var curAlien = vlen[Math.floor(Math.random() * vlen.length)];
-                if (curAlien)
-                    addShells(aShells,
-                        Math.floor(map.x + curAlien.x + (curAlien.size.w - (CELL * typeShips.SHELL_ALIEN.size[0])) / 2),
-                        Math.floor(map.y + curAlien.y + (CELL * typeShips.SHELL_ALIEN.size[1])),
-                        typeShips.SHELL_ALIEN
-                    );
-                astime = 50;
-            }
-
-            var killed = checkKills(map, shells);
-
-            timeOutMoveLR--;
-
-            if (aShells.length) {
-                drawShells(canvas.node(), aShells, alien_shell_speed);
-            }
-
-            var alive = !checkBotKill(bot, aShells);
-
-            if (killed || timeOutMoveLR <= 0 || !alive) {
-                var repaint = false;
-
-                if (h - map.h - bot.size.h < map.y || !vlen.length || !alive) {
-                    mainCtx.clearRect(bot.px, bot.y, bot.size.w, bot.size.h);
-                    bot.draw(canvas.node());
-                    if(!alive) {
-                        gameOver(__score, __level);
-                        __score = 0;
-                    }
-                    reInitStage();
-                    if (!alive)
-                        return;
-                }
-
-                mainCtx.clearRect(map.x, map.y, bufCanvas.width, bufCanvas.height);
-
-                if (killed) {
-                    refresh(__score, __level);
-                    klr += cklr * killed;
-                    if (klr > shell_max_speed)
-                        klr = shell_max_speed;
-                    repaint = true;
-                }
-
-                if (timeOutMoveLR <= 0) {
-                    if (!timeOutMoveDown) {
-                        timeOutMoveDown = 1;
-                        map.y += alien_speed;
-                    }
-                    calcRectAliens(map);
-                    if (map.dir) {
-                        map.x += CELL;
-                        if (map.x + map.w > w) {
-                            map.dir = 0;
-                            map.x = w - map.w;
-                            timeOutMoveDown = 0;
-                        }
-                    }
-                    else {
-                        map.x -= CELL;
-                        if (map.x + map.px < 0) {
-                            map.dir = 1;
-                            map.x = -map.px;
-                            timeOutMoveDown = 0;
-                        }
-                    }
-                    timeOutMoveLR = calcTOMLR(vlen.length);
-                }
-
-                map.y = Math.floor(map.y);
-                map.x = Math.floor(map.x);
-
-                repaint = true;
-                if (repaint)
-                    drawAliens(bufCanvas, map, 0);
-
-                mainCtx.drawImage(bufCanvas, map.x, map.y);
-            }
-
-            if (shells.length) {
-                drawShells(canvas.node(), shells, shell_max_speed);
-            }
+            drawAliens(bufCanvas, map, 0);
         }
-        else {
-            bot.px = bot.x;
-            bot.x += bot.dir * bot.slideSpeed;
-            var cp = w/2 - bot.size.w/2;
-            if (bot.x - bot.slideSpeed == cp || bot.x + bot.slideSpeed == cp
-                || (bot.x > cp - bot.slideSpeed
-                && bot.x < cp + bot.slideSpeed)) {
-                bot.x = w/2 - bot.size.w/2;
+
+        function timer() {
+            if (pause && !bot.moveToCenter)
+                return;
+
+            if (!stop || bot.moveToCenter)
+                requestAnimationFrame(timer);
+
+            if (dirLeft || dirRight) {
+                bot.px = bot.x;
+                bot.x += (dirRight == 1 ? -1 : 1) * CELL;
+                if (dirRight && bot.x <= 0)
+                    bot.x = 0;
+                else if (dirLeft && bot.x >= w - bot.size.w)
+                    bot.x = w - bot.size.w;
                 bot.moveToCenter = false;
-                if (__game.onFinish)
-                    __game.onFinish(__game, {x : bot.x, y : bot.y});
+                posChange = true;
             }
-            posChange = true;
+
+            mainCtx.save();
+            mainCtx.scale(_s[0], _s[1]);
+            if (!bot.moveToCenter) {
+
+                vlen = map.filter(function(d){ return d.visible; });
+
+                if (ufo.visible) {
+                    mainCtx.clearRect(ufo.x, 0, ufo.size.w, ufo.size.h);
+                    ufo.draw(canvas.node());
+                }
+
+                if (!astime-- && vlen.length) {
+                    var curAlien = vlen[Math.floor(Math.random() * vlen.length)];
+                    if (curAlien)
+                        addShells(aShells,
+                            Math.floor(map.x + curAlien.x + (curAlien.size.w - (CELL * typeShips.SHELL_ALIEN.size[0])) / 2),
+                            Math.floor(map.y + curAlien.y + (CELL * typeShips.SHELL_ALIEN.size[1])),
+                            typeShips.SHELL_ALIEN
+                        );
+                    astime = 50;
+                }
+
+                var killed = checkKills(map, shells);
+
+                timeOutMoveLR--;
+
+                if (aShells.length) {
+                    drawShells(canvas.node(), aShells, alien_shell_speed);
+                }
+
+                var alive = !checkBotKill(bot, aShells);
+
+                if (killed || timeOutMoveLR <= 0 || !alive) {
+                    var repaint = false;
+
+                    if (h - map.h - bot.size.h < map.y || !vlen.length || !alive) {
+                        mainCtx.clearRect(bot.px, bot.y, bot.size.w, bot.size.h);
+                        bot.draw(canvas.node());
+                        if(!alive) {
+                            gameOver(__score, __level);
+                            __score = 0;
+                        }
+                        reInitStage();
+                        if (!alive)
+                            return;
+                    }
+
+                    mainCtx.clearRect(map.x, map.y, bufCanvas.width, bufCanvas.height);
+
+                    if (killed) {
+                        refresh(__score, __level);
+                        klr += cklr * killed;
+                        if (klr > shell_max_speed)
+                            klr = shell_max_speed;
+                        repaint = true;
+                    }
+
+                    if (timeOutMoveLR <= 0) {
+                        if (!timeOutMoveDown) {
+                            timeOutMoveDown = 1;
+                            map.y += alien_speed;
+                        }
+                        calcRectAliens(map);
+                        if (map.dir) {
+                            map.x += CELL;
+                            if (map.x + map.w > w) {
+                                map.dir = 0;
+                                map.x = w - map.w;
+                                timeOutMoveDown = 0;
+                            }
+                        }
+                        else {
+                            map.x -= CELL;
+                            if (map.x + map.px < 0) {
+                                map.dir = 1;
+                                map.x = -map.px;
+                                timeOutMoveDown = 0;
+                            }
+                        }
+                        timeOutMoveLR = calcTOMLR(vlen.length);
+                        timeOutMoveLR = timeOutMoveLR < 2 ? 2 : timeOutMoveLR;
+                    }
+
+                    map.y = Math.floor(map.y);
+                    map.x = Math.floor(map.x);
+
+                    repaint = true;
+                    if (repaint)
+                        drawAliens(bufCanvas, map, 0);
+
+                    mainCtx.drawImage(bufCanvas, map.x, map.y);
+                }
+
+                if (shells.length) {
+                    drawShells(canvas.node(), shells, shell_max_speed);
+                }
+            }
+            else {
+                bot.px = bot.x;
+                bot.x += bot.dir * bot.slideSpeed;
+                var cp = w/2 - bot.size.w/2;
+                if (bot.x - bot.slideSpeed == cp || bot.x + bot.slideSpeed == cp
+                    || (bot.x > cp - bot.slideSpeed
+                    && bot.x < cp + bot.slideSpeed)) {
+                    bot.x = w/2 - bot.size.w/2;
+                    bot.moveToCenter = false;
+                    if (__game.onFinish)
+                        __game.onFinish(__game, {x : bot.x, y : bot.y});
+                }
+                posChange = true;
+            }
+
+            if (posChange) {
+                mainCtx.clearRect(bot.px, bot.y, bot.size.w, bot.size.h);
+                bot.draw(canvas.node());
+                posChange = false;
+            }
+            mainCtx.restore();
         }
 
-        if (posChange) {
-            mainCtx.clearRect(bot.px, bot.y, bot.size.w, bot.size.h);
-            bot.draw(canvas.node());
-            posChange = false;
-        }
-        mainCtx.restore();
-    }
 
-
-    __game.newGame = function() {
-        __score = 0;
-        //__level = 0;
-        dirLeft = dirRight = 0;
-        reInitStage();
-        stop = false;
-        pause = false;
-        canvas.node().focus();
-        timer();
-    };
-
-    __game.paused = function() {
-        return pause;
-    };
-
-    function __running() {
-        return !pause && !stop;
-    }
-
-    __game.runnig = __running;
-
-    __game.stopGame = function() {
-        stop = true;
-        pause = false;
-        dirLeft = dirRight = 0;
-    };
-
-    __game.pauseGame = function() {
-        pause = true;
-        dirLeft = dirRight = 0;
-    };
-
-    __game.resumeGame = function() {
-        bot.px = bot.x;
-        bot.x = bot.lx || bot.x;
-        bot.y = bot.ly || bot.y;
-        pause = false;
-        posChange = true;
-        timer();
-    };
-
-    __game.shipCoord = function() {
-        return {
-            x : bot.x,
-            y : bot.y
+        __game.newGame = function() {
+            __score = 0;
+            //__level = 0;
+            dirLeft = dirRight = 0;
+            reInitStage();
+            stop = false;
+            pause = false;
+            canvas.node().focus();
+            timer();
         };
-    };
 
-    __game.getPic = function(w) {
-        var temp = document.createElement('canvas'),
-            cxt = temp.getContext("2d"),
-            p = Math.abs(canvas.node().height / (canvas.node().width || 1));
+        __game.paused = function() {
+            return pause;
+        };
 
-        temp.width = w || 300;
-        temp.height = temp.width * p;
-        cxt.save();
-        p = temp.width / (canvas.node().width || 1);
-        cxt.scale(p, p);
-        cxt.fillStyle = "#00130c";
-        cxt.fillRect(0, 0, canvas.node().width, canvas.node().height);
-        cxt.drawImage(canvas.node(), 0, 0);
-        cxt.restore();
-        return temp.toDataURL();
-    };
-
-    __game.moveShipToCenter = function(onFinish, speed) {
-        dirLeft = dirRight = 0;
-        bot.lx = bot.x;
-        bot.ly = bot.y;
-        bot.slideSpeed = speed || CELL;
-        bot.dir = (bot.x > w/2 - bot.size.w/2 ? -1 : 1);
-        bot.moveToCenter = true;
-        __game.onFinish = onFinish || 0;
-        if (bot.x == w/2 - bot.size.w/2) {
-            bot.moveToCenter = false;
-            __game.onFinish && __game.onFinish(__game, {x : bot.x, y : bot.y});
+        function __running() {
+            return !pause && !stop;
         }
-    };
 
-    timer();
-    stop = true;
+        __game.runnig = __running;
+
+        __game.stopGame = function() {
+            stop = true;
+            pause = false;
+            dirLeft = dirRight = 0;
+        };
+
+        __game.pauseGame = function() {
+            pause = true;
+            dirLeft = dirRight = 0;
+        };
+
+        __game.resumeGame = function() {
+            bot.px = bot.x;
+            bot.x = bot.lx || bot.x;
+            bot.y = bot.ly || bot.y;
+            pause = false;
+            posChange = true;
+            timer();
+        };
+
+        __game.shipCoord = function() {
+            return {
+                x : bot.x,
+                y : bot.y
+            };
+        };
+
+        __game.getPic = function(w) {
+            var temp = document.createElement('canvas'),
+                cxt = temp.getContext("2d"),
+                p = Math.abs(canvas.node().height / (canvas.node().width || 1));
+
+            temp.width = w || 300;
+            temp.height = temp.width * p;
+            cxt.save();
+            p = temp.width / (canvas.node().width || 1);
+            cxt.scale(p, p);
+            cxt.fillStyle = "#00130c";
+            cxt.fillRect(0, 0, canvas.node().width, canvas.node().height);
+            cxt.drawImage(canvas.node(), 0, 0);
+            cxt.restore();
+            return temp.toDataURL();
+        };
+
+        __game.moveShipToCenter = function(onFinish, speed) {
+            dirLeft = dirRight = 0;
+            bot.lx = bot.x;
+            bot.ly = bot.y;
+            bot.slideSpeed = speed || CELL;
+            bot.dir = (bot.x > w/2 - bot.size.w/2 ? -1 : 1);
+            bot.moveToCenter = true;
+            __game.onFinish = onFinish || 0;
+            if (bot.x == w/2 - bot.size.w/2) {
+                bot.moveToCenter = false;
+                __game.onFinish && __game.onFinish(__game, {x : bot.x, y : bot.y});
+            }
+        };
+
+        timer();
+        stop = true;
+    }
+    __game();
     return __game;
 }
