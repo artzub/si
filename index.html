@@ -31,9 +31,9 @@
 
     <title class="title">apus agency</title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script src="d3.js"></script>
-    <script src="game.js"></script>
-    <script src="main.js"></script>
+    <script src="js/d3.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/main.js"></script>
     <link rel="stylesheet" href="style.css" type="text/css" />
     <!--[if gte IE 9]>
     <style type="text/css">
@@ -90,9 +90,9 @@
         </div>
         <div class="article">
             <div class="logo">
-                <img src="logo.png" id="logoimg">
+                <img src="img/logo.png" id="logoimg">
                 <div id="games">
-                    <img src="ship.png" id="shipImg" style="display: none">
+                    <img src="img/ship.png" id="shipImg" style="display: none">
                 </div>
                 <div id="start_game"><span class="eng">play the game!</span><span class="ru" style="display: none;">играть!</span></div>
             </div>
@@ -101,7 +101,7 @@
         <div class="footer">
             <div class="panel">
                 <div class="img-desc">
-                    <img src="book.png" class="yeast" alt="showreel '12">
+                    <img src="img/book.png" class="yeast" alt="showreel '12">
                     <div>
                         <a href="#" class="lang_ru">ru</a><span class="lang_ru" style="display: none">ru</span> <a href="#" class="lang_eng" style="display: none">eng</a><span class="lang_eng">eng</span>
                         <br /><br />
@@ -125,7 +125,7 @@
 
     <div id="help" style="display: none;">
         <div>
-            <img src="help.png">
+            <img src="img/help.png">
             <a class="backtogame"><span class="eng">Back to game</span><span class="ru" style="display: none">Назад в игру</span></a>
         </div>
     </div>
@@ -135,7 +135,7 @@
             <div class="ffr bgt">Game over!</div>
             <div class="ffr brt">Your results: <span id="result"></span> points!</div>
             <div class="ffr">
-                <div id="share_button"></div>
+                <div id="share_button"></div><img src='img/255.gif' id="loader" style="display: none">
             </div>
             <div class="ffr">
                 <div class="fb-like-box" data-href="https://www.facebook.com/Apus.agency" data-width="300" data-show-faces="true" data-stream="false" data-header="false"></div>

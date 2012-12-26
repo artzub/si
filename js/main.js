@@ -249,8 +249,7 @@ function init() {
     d3.select("#share_button")
         .on("click", function() {
             d3.event.preventDefault();
-            writeShare();
-            hideShare();
+            writeShare(hideShare);
         });
 
     d3.select("#cancel_button").on("click",function() {
@@ -269,7 +268,8 @@ function init() {
             });
     }
 
-    function writeShare() {
+    function writeShare(cb) {
+        d3.select('#loader').style('display', 'inline-block');
         game.imgData && $.ajax({
             url: 'http://api.imgur.com/2/upload.json',
             type: 'POST',
@@ -291,6 +291,7 @@ function init() {
             }
         }) || open();
         function open(imgurl) {
+            d3.select('#loader').style('display', 'none');
             window.open('https://www.facebook.com/dialog/feed?' +
                 'app_id=141151189369644&' +
                 'link=' + encodeURIComponent(document.location) + '&' +
@@ -302,14 +303,16 @@ function init() {
                     'we - a team of specialists, successfully meet ' +
                     'the challenges in the field of visual and digital communications.'
             ) + '&' +
-                'redirect_uri=https://www.facebook.com/Apus.agency', "Share",
+                'redirect_uri=http://www.apus.ag', "Share",
                 "width=200" + window.outerWidth * .6 + ", height=" + window.outerHeight * .7 +
                 ", left=" + window.outerWidth * .4 + ", top=" + window.outerHeight * .35
             );
+            if (cb)
+                cb();
         }
     }
 
-    function facebookShare(s, l) {
+    function facebookShare(s) {
         game.imgData = game.getPic();
         stopGame();
         d3.select("#result").text(s);
