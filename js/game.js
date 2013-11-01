@@ -3,7 +3,7 @@
     ver: 0.1
  */
 
-"use strict";
+//"use strict";
 
 (function() {
     var lastTime = 0;
@@ -315,7 +315,7 @@ function ship(type, id, x, y) {
         }
     };
 
-    //bot.constructor;
+    bot.constructor = arguments.callee;
     return bot;
 }
 

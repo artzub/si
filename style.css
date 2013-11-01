@@ -204,7 +204,7 @@ a:hover {
     overflow: hidden;
     z-index: 14;
     position: absolute;
-    top: 0;
+    top: 30px;
     left: 0;
 }
 
@@ -249,8 +249,8 @@ a:hover {
 
 .panel > div {
     font-family: arial, sans-serif;
-    font-size: 12pt;
-    text-align: justify;
+    font-size: 11pt;
+    text-align: left;
     float: left;
     margin-top: 20px;
     margin-right: 40px;
@@ -296,18 +296,22 @@ a:hover {
     overflow: hidden;
     position: absolute;
     z-index: 15;
-    text-shadow: 1px 1px 0.5px rgba(0, 0, 0, .5)/*rgba(31, 124, 93, .2)*/;
+    /*text-shadow: 1px 1px 0.5px rgba(0, 0, 0, .5)/*rgba(31, 124, 93, .2);*/
 }
 
 #start_game span {
     display: inline-block;
-    padding: 4px 5px;
+    padding-right: 3px;
+	padding-left: 3px;
+	padding-top: 3px;
+	padding-bottom: 2px;
     background: #33cc99;
-    font-size: 9pt;
+    font-size: 11pt;
     font-weight: bold;
     color: #f9f9f9;
     white-space: nowrap;
     cursor: pointer;
+	text-transform: uppercase;
 }
 
 .hide {

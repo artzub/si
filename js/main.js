@@ -9,9 +9,9 @@ function init() {
 
     window.game = createGamePlay("#games", 850, 850, 2, function(scr, lvl) {
         score.text(scr);
-        d3.selectAll(".titledata").attr("content", "apus agency. My score " + score.text());
+        d3.selectAll(".titledata").attr("content", "Apus. Agency. Your score " + score.text());
         d3.selectAll(".descdata").attr("content", "My score " + score.text());
-        d3.selectAll(".title").text("apus agency. My score " + score.text());
+        d3.selectAll(".title").text("Apus. Agency. Your score " + score.text());
     }, facebookShare);
 
     var backGame = d3.selectAll(".backtogame")
@@ -73,8 +73,8 @@ function init() {
             cw = (w / wli),
             ch = (h / hli),
 
-            l = wli * .77 + li.property("offsetLeft"),
-            b = hli * .52 + 28 / ch - ch * 2,
+            l = wli * .67 + li.property("offsetLeft"),
+            b = hli * .50 + 28 / ch - ch * 2,
 
             coord = game.shipCoord();
 
@@ -275,7 +275,7 @@ function init() {
             type: 'POST',
             data: {
                 type: 'base64',
-                key: 'cd059636b01061d16eb49f72107c2cf6',
+                key: '4ce80ab1175a2e2a5e17ff081cb80aca',
                 name: 'screen',
                 title: 'screen si',
                 caption: 'screen si',
@@ -295,18 +295,15 @@ function init() {
             window.open('https://www.facebook.com/dialog/feed?' +
                 'app_id=141151189369644&' +
                 'link=' + encodeURIComponent(document.location) + '&' +
-                'picture=' + (imgurl || 'http://artzub.com/works/si/game.png') + '&' +
-                'name=' + encodeURIComponent(d3.select("title").text()) + '&' +
+                'picture=' + (imgurl || 'http://apus.ag/apus-fb-img.png') + '&' +
+                'name=' + encodeURIComponent("Apus Game. My score " + d3.select("#result").text() + " points.") + '&' +
                 'caption=Apus%20Agency&' +
                 'description=' + encodeURIComponent(
                 'Creative agency «Apus» appeared in 2008, and today, ' +
                     'we - a team of specialists, successfully meet ' +
                     'the challenges in the field of visual and digital communications.'
             ) + '&' +
-                'redirect_uri=http://www.apus.ag', "Share",
-                "width=200" + window.outerWidth * .6 + ", height=" + window.outerHeight * .7 +
-                ", left=" + window.outerWidth * .4 + ", top=" + window.outerHeight * .35
-            );
+                'redirect_uri=http://www.apus.ag');
             if (cb)
                 cb();
         }
